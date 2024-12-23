@@ -6,14 +6,18 @@ import type React from "react";
 import { Button } from "../Button";
 import { Component } from "lucide-react";
 import { useEffect } from "react";
+import { useComponentStore } from "@/@core/infra/store/component/component.store";
 
 const Header: React.FC = () => {
 	const { data: companies } = useGetCompanies();
 	const setActiveCompany = useCompanyStore((store) => store.setActiveCompany);
 	const activeCompany = useCompanyStore((store) => store.activeCompany);
+	const resetActiveComponent = useComponentStore((store) => store.reset);
 
 	const handleClickCompany = (company: Company) => {
+		if (company.id === activeCompany?.id) return;
 		setActiveCompany(company);
+		resetActiveComponent();
 	};
 
 	useEffect(() => {

@@ -13,5 +13,5 @@ export function useArrow({ searchTerm, item }: IUseArrowProps) {
 
 	const shouldRenderArrow = item.children.length > 0;
 
-	return { renderArrow, setOpen, shouldRenderArrow };
+	return { renderArrow, setOpen, open, shouldRenderArrow };
 }

@@ -6,4 +6,5 @@ export interface IState {
 
 export interface IActions {
 	setActiveComponent: (asset: INestAsset) => void;
+	reset: () => void;
 }

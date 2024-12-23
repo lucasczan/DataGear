@@ -5,23 +5,25 @@ import type { Location } from "@/@core/domain/enterprise/entities/location";
 import axios from "axios";
 
 class CompanyService implements ICompanyService {
+	baseUrl = "https://fake-api.tractian.com/";
+
 	async getAssets(companyId: Company["id"]): Promise<Array<Asset>> {
 		const response = await axios.get<Array<Asset>>(
-			`https://fake-api.tractian.com/companies/${companyId}/assets`,
+			`${this.baseUrl}/companies/${companyId}/assets`,
 		);
 		return response.data;
 	}
 
 	async getLocations(companyId: Company["id"]): Promise<Array<Location>> {
 		const response = await axios.get<Array<Location>>(
-			`https://fake-api.tractian.com/companies/${companyId}/locations`,
+			`${this.baseUrl}/companies/${companyId}/locations`,
 		);
 		return response.data;
 	}
 
 	async getCompanies(): Promise<Array<Company>> {
 		const response = await axios.get<Array<Company>>(
-			"https://fake-api.tractian.com/companies",
+			`${this.baseUrl}/companies`,
 		);
 		return response.data;
 	}

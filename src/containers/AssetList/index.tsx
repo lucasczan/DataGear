@@ -27,7 +27,7 @@ export const AssetList: React.FC<IAssetListProps> = ({ company }) => {
 		[assets, locations],
 	);
 
-	const { register, nameValue } = useForm();
+	const { register, nameValue, isLoading } = useForm();
 
 	if (!locations || !assets) return;
 	if (locationIsLoading || assetsIsLoading) return <div>Loading...</div>;
@@ -37,6 +37,7 @@ export const AssetList: React.FC<IAssetListProps> = ({ company }) => {
 			<Input
 				{...register("name")}
 				placeholder="Buscar Ativo ou Local"
+				isLoading={isLoading}
 				endIcon={<Search size={18} className="text-gray-400" />}
 			/>
 			<div className=" rounded-sm h-[83vh] overflow-y-auto p-4">
