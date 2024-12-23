@@ -73,14 +73,14 @@ export const AssetList: React.FC<IAssetListProps> = ({
 		);
 
 	return (
-		<div className="flex flex-col gap-4 min-w-[50%] border-gray-200 border-[1px]   ">
+		<div className="flex flex-col gap-4 min-w-[50%] border-gray-200 border-[1px]">
 			<Input
 				{...register("name")}
 				placeholder="Buscar Ativo ou Local"
 				isLoading={isLoading}
 				endIcon={<Search size={18} className="text-gray-400" />}
 			/>
-			<div className=" rounded-sm h-[76vh] overflow-y-auto p-4">
+			<div className="rounded-sm h-[76vh] overflow-y-auto p-4">
 				{treeItems.map(renderItem)}
 				{notFound && <span>Nenhum resultado para pesquisa.</span>}
 			</div>

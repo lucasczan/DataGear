@@ -6,16 +6,11 @@ import { useComponentStore } from "@/@core/infra/store/component/component.store
 import * as Accordion from "@radix-ui/react-accordion";
 
 import { Box, Layers2, MapPin } from "lucide-react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useState } from "react";
 import { useArrow } from "./hooks/useArrow";
 import { Status } from "@/components/Status";
-import { HideItemByTermUseCase } from "@/@core/domain/application/usecases/hide-item-by-term.usecase";
-import { HideItemBySensorTypeUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-type.usecase";
-import { HideItemBySensorStatusUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-status.usecase";
+import { useFilters } from "./hooks/useFilters";
 
-const hideItemUsecase = new HideItemByTermUseCase();
-const hideItemBySensorTypeUseCase = new HideItemBySensorTypeUseCase();
-const hideItemBySensorStatusUseCase = new HideItemBySensorStatusUseCase();
 export interface IItemProps {
 	item: INestAsset | INestLocation;
 	searchTerm: string;
@@ -47,19 +42,6 @@ const Item: React.FC<IItemProps> = memo(
 			(store) => store.setActiveComponent,
 		);
 
-		const hideItem = useMemo(() => {
-			if (searchTerm) return hideItemUsecase.execute({ searchTerm, item });
-		}, [searchTerm, item]);
-
-		const hideItemBySensorType = useMemo(() => {
-			if (energySensorFilter) return hideItemBySensorTypeUseCase.execute(item);
-		}, [item, energySensorFilter]);
-
-		const hideItemBySensorStatus = useMemo(() => {
-			if (criticalStatusFilter)
-				return hideItemBySensorStatusUseCase.execute(item);
-		}, [item, criticalStatusFilter]);
-
 		const { renderArrow, setOpen, open, shouldRenderArrow } = useArrow({
 			searchTerm,
 			item,
@@ -67,26 +49,14 @@ const Item: React.FC<IItemProps> = memo(
 			criticalStatusFilter,
 		});
 
-		useEffect(() => {
-			const showByTerm = !hideItem && searchTerm.length > 0;
-			const showBySensor = !hideItemBySensorType && energySensorFilter;
-			const showBySensorStatus =
-				!hideItemBySensorStatus && criticalStatusFilter;
-
-			if (showByTerm) setAccordionValue(item.id);
-			if (showBySensor) setAccordionValue(item.id);
-			if (showBySensorStatus) setAccordionValue(item.id);
-			if (!showByTerm && !showBySensor && !showBySensorStatus)
-				setAccordionValue(undefined);
-		}, [
-			hideItem,
-			searchTerm,
-			item,
-			energySensorFilter,
-			hideItemBySensorType,
-			criticalStatusFilter,
-			hideItemBySensorStatus,
-		]);
+		const { hideItem, hideItemBySensorStatus, hideItemBySensorType } =
+			useFilters({
+				criticalStatusFilter,
+				energySensorFilter,
+				item,
+				searchTerm,
+				setAccordionValue,
+			});
 
 		if (hideItem || hideItemBySensorType || hideItemBySensorStatus)
 			return <></>;

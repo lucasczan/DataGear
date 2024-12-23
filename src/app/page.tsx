@@ -33,16 +33,16 @@ export default function Home() {
 	return (
 		<QueryRoot>
 			<Header />
-			<div className="p-4 mt-12">
-				<div className="bg-white rounded-sm p-4">
-					<div className="mb-3 flex justify-between">
+			<div className="p-4 mt-20 md:mt-12">
+				<div className="bg-white rounded-sm p-4 min-h-[86vh]">
+					<div className="mb-3 flex justify-between flex-col md:flex-row ">
 						<h1>
 							<span className="text-xl font-semibold mr-1">Ativos</span>
 							<span className="ml-1 text-gray-600">
 								/ {activeCompany?.name}
 							</span>
 						</h1>
-						<div className="flex gap-4">
+						<div className="flex gap-4 mt-4 md:mt-0">
 							<Button
 								variant={energySensorFilter ? "primary" : "outlined"}
 								className="flex gap-2"
@@ -54,7 +54,9 @@ export default function Home() {
 										energySensorFilter ? "text-white" : "text-blue-500"
 									}
 								/>
-								<span className="font-semibold">Sensor de energia</span>
+								<span className="font-semibold block text-sm">
+									Sensor de energia
+								</span>
 							</Button>
 							<Button
 								variant={criticalStatusFilter ? "primary" : "outlined"}
@@ -67,7 +69,7 @@ export default function Home() {
 										criticalStatusFilter ? "text-white" : "text-blue-500"
 									}
 								/>
-								<span className="font-semibold">Crítico</span>
+								<span className="font-semibold block text-sm">Crítico</span>
 							</Button>
 						</div>
 					</div>

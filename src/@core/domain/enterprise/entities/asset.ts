@@ -4,7 +4,7 @@ interface Asset {
 	parentId: string | null;
 	sensorId?: string;
 	sensorType: string | null;
-	status: string | null;
+	status: "operating" | "alert" | null;
 	gatewayId?: string;
 	locationId?: string | null;
 }
