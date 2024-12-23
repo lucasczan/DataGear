@@ -37,16 +37,11 @@ const Item: React.FC<IItemProps> = memo(
 		);
 
 		const hideItem = useMemo(() => {
-			if (searchTerm) {
-				return hideItemUsecase.execute({ searchTerm, item });
-			}
+			if (searchTerm) return hideItemUsecase.execute({ searchTerm, item });
 		}, [searchTerm, item]);
 
 		const hideItemBySensorType = useMemo(() => {
-			if (energySensorFilter) {
-				console.log({ item });
-				return hideItemBySensorTypeUseCase.execute(item);
-			}
+			if (energySensorFilter) return hideItemBySensorTypeUseCase.execute(item);
 		}, [item, energySensorFilter]);
 
 		const { renderArrow, setOpen, open, shouldRenderArrow } = useArrow({

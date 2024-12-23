@@ -1,28 +1,32 @@
-type params = {
-	item: object;
+import type { INestAsset, INestLocation } from "./list-assets-tree.usecase";
+
+type Params = {
+	item: INestAsset | INestLocation;
 	searchTerm: string;
 };
 
 class HideItemByTermUseCase {
-	execute({ item, searchTerm }: params) {
+	execute({ item, searchTerm }: Params): boolean {
 		if (!searchTerm) return false;
-		const shouldHideItem = this.findNameInString(
-			JSON.stringify(item),
-			searchTerm,
-		);
-
-		return shouldHideItem;
+		return this.hideItemByName(item, searchTerm);
 	}
 
-	findNameInString = (data: string, searchTerm: string) => {
-		const regex = /"name":"([^"]+)"/g;
-		const matches = [...data.matchAll(regex)]; // Encontra todas as ocorrências do campo "name"
+	private hideItemByName(obj: Params["item"], searchTerm: string): boolean {
+		if (obj.name) {
+			if (obj.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+				return false;
+			}
+		}
 
-		return !matches.some((match) => {
-			const nameValue = match[1]; // Extrai o valor do campo "name"
-			return nameValue.toLowerCase().includes(searchTerm.toLowerCase());
-		});
-	};
+		if (obj.children) {
+			for (const child of obj.children) {
+				const hide = this.hideItemByName(child, searchTerm);
+				if (!hide) return false;
+			}
+		}
+
+		return true;
+	}
 }
 
 export { HideItemByTermUseCase };
