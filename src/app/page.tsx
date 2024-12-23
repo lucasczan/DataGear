@@ -11,7 +11,6 @@ export default function Home() {
 	const activeCompany = useCompanyStore((state) => state.activeCompany);
 	const activeComponent = useComponentStore((state) => state.activeComponent);
 
-	console.log({ activeComponent });
 	return (
 		<QueryRoot>
 			<Header />

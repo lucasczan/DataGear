@@ -19,7 +19,6 @@ function shouldHideItem({ item, searchTerm }: shouldHideItemParams) {
 	if (!searchTerm) return false;
 	const shouldHideItem = findNameInString(JSON.stringify(item), searchTerm);
 
-	if (!shouldHideItem) console.log(item);
 	return shouldHideItem;
 }
 
