@@ -4,8 +4,14 @@ import type { IItemProps } from "..";
 
 interface IUseArrowProps extends IItemProps {}
 
-export function useArrow({ searchTerm, item }: IUseArrowProps) {
-	const [open, setOpen] = useState(Boolean(searchTerm.length));
+export function useArrow({
+	searchTerm,
+	item,
+	energySensorFilter,
+}: IUseArrowProps) {
+	const [open, setOpen] = useState(
+		Boolean(searchTerm.length) || energySensorFilter,
+	);
 
 	function renderArrow() {
 		return open ? <ChevronDown size={18} /> : <ChevronUp size={18} />;

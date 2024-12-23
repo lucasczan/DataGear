@@ -14,11 +14,11 @@ export const useForm = () => {
 	const nameValue = form.watch("name");
 
 	useEffect(() => {
-		setIsLoading(true);
+		if (nameValue) setIsLoading(true);
 		const timeout = setTimeout(() => {
 			setDebouncedName(nameValue);
 			setIsLoading(false);
-		}, 600);
+		}, 500);
 
 		return () => {
 			clearTimeout(timeout);

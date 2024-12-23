@@ -30,21 +30,16 @@ class ListAssetsTreeUseCase {
 		const items = [];
 
 		for (const asset of nestedAssets) {
+			if (!asset.locationId) items.push(asset);
+
 			if (asset.locationId) {
 				const parent = locationMap.get(asset.locationId);
 				if (parent) parent.children.push(asset);
 			}
-
-			if (!asset.locationId) {
-				items.push(asset);
-			}
 		}
 
 		for (const location of locationMap.values()) {
-			if (!location.parentId) {
-				const findLocation = locationMap.get(location.id);
-				if (findLocation) items.push(findLocation);
-			}
+			if (!location.parentId) items.push(location);
 
 			if (location.parentId) {
 				const parent = locationMap.get(location.parentId);
