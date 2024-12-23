@@ -33,7 +33,7 @@ export default function Home() {
 	return (
 		<QueryRoot>
 			<Header />
-			<div className="p-4 mt-20 md:mt-12">
+			<div className="p-4 mt-12">
 				<div className="bg-white rounded-sm p-4 min-h-[86vh]">
 					<div className="mb-3 flex justify-between flex-col md:flex-row ">
 						<h1>
