@@ -16,7 +16,10 @@ export default function Home() {
 			<Header />
 			<div className="p-4 mt-12">
 				<div className="bg-white rounded-sm p-4">
-					<h1>Ativos/{activeCompany?.name}</h1>
+					<h1 className="mb-3">
+						<span className="text-xl font-semibold mr-1">Ativos</span>
+						<span className="ml-1 text-gray-600">/ {activeCompany?.name}</span>
+					</h1>
 					<div className="flex gap-2">
 						{activeCompany?.id && <AssetList company={activeCompany} />}
 						{activeComponent?.id && (

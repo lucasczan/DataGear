@@ -1,5 +1,5 @@
 import type React from "react";
-import { forwardRef, type InputHTMLAttributes, type Ref } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	endIcon: React.ReactNode;

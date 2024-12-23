@@ -12,7 +12,7 @@ interface IAssetListProps {
 	company: Company;
 }
 
-const ListAssetTreeUseCase = new ListAssetsTreeUseCase();
+const listAssetTreeUseCase = new ListAssetsTreeUseCase();
 
 export const AssetList: React.FC<IAssetListProps> = ({ company }) => {
 	const { data: locations = [], isLoading: locationIsLoading } =
@@ -22,8 +22,8 @@ export const AssetList: React.FC<IAssetListProps> = ({ company }) => {
 		company.id,
 	);
 
-	const items = useMemo(
-		() => ListAssetTreeUseCase.execute({ assets, locations }),
+	const treeItems = useMemo(
+		() => listAssetTreeUseCase.execute({ assets, locations }),
 		[assets, locations],
 	);
 
@@ -40,7 +40,7 @@ export const AssetList: React.FC<IAssetListProps> = ({ company }) => {
 				endIcon={<Search size={18} className="text-gray-400" />}
 			/>
 			<div className=" rounded-sm h-[83vh] overflow-y-auto p-4">
-				{items.map((item) => (
+				{treeItems.map((item) => (
 					<Item key={item?.id} item={item} searchTerm={nameValue} />
 				))}
 			</div>

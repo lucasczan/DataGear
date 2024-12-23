@@ -5,9 +5,11 @@ import type {
 import { useComponentStore } from "@/@core/infra/store/component/component.store";
 import * as Accordion from "@radix-ui/react-accordion";
 
-import { Box, ChevronDown, ChevronUp, Layers2, MapPin } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { Box, Layers2, MapPin } from "lucide-react";
+import { memo, useMemo } from "react";
 import { shouldHideItem } from "./helpers/shouldHideItem";
+import { useArrow } from "./hooks/useArrow";
+import { useStatus } from "./hooks/useStatus";
 
 export interface IItemProps {
 	item: INestAsset | INestLocation;
@@ -21,33 +23,23 @@ const icon = {
 };
 
 const Item: React.FC<IItemProps> = memo(({ item, searchTerm }) => {
-	const [open, setOpen] = useState(Boolean(searchTerm.length));
+	const setActiveComponent = useComponentStore(
+		(store) => store.setActiveComponent,
+	);
 
 	const hideItem = useMemo(
 		() => shouldHideItem({ searchTerm, item }),
 		[searchTerm, item],
 	);
 
-	const setActiveComponent = useComponentStore(
-		(store) => store.setActiveComponent,
-	);
+	const { renderArrow, setOpen, shouldRenderArrow } = useArrow({
+		searchTerm,
+		item,
+	});
+
+	const { renderStatus } = useStatus();
 
 	if (hideItem) return <></>;
-
-	const shouldRenderArrow = item.children.length > 0;
-	const shouldRenderStatus = item.type === "component";
-
-	function renderArrow() {
-		return open ? <ChevronDown size={18} /> : <ChevronUp size={18} />;
-	}
-
-	function renderStatus(status: INestAsset["status"]) {
-		const color =
-			status === "operating"
-				? "bg-green-500 rounded-full w-2 h-2"
-				: "bg-red-500 rounded-full w-2 h-2";
-		return <span className={color} />;
-	}
 
 	function handleClick() {
 		if (item.type !== "component") return;
@@ -64,8 +56,8 @@ const Item: React.FC<IItemProps> = memo(({ item, searchTerm }) => {
 					>
 						<span className="flex gap-2 items-center">
 							{shouldRenderArrow && renderArrow()}
-							{icon[item.type]} <span>{item.name}</span>{" "}
-							{shouldRenderStatus && renderStatus(item.status)}
+							{icon?.[item?.type] || ""} <span>{item.name}</span>{" "}
+							{"status" in item && renderStatus(item?.status)}
 						</span>
 					</Accordion.AccordionTrigger>
 				)}
@@ -77,8 +69,8 @@ const Item: React.FC<IItemProps> = memo(({ item, searchTerm }) => {
 						onClick={handleClick}
 					>
 						{shouldRenderArrow && renderArrow()}
-						{icon[item.type]} <span>{item.name}</span>{" "}
-						{shouldRenderStatus && renderStatus(item.status)}
+						{icon?.[item?.type] || ""} <span>{item.name}</span>{" "}
+						{"status" in item && renderStatus(item?.status)}
 					</button>
 				)}
 
