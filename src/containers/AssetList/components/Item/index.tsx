@@ -11,13 +11,16 @@ import { useArrow } from "./hooks/useArrow";
 import { Status } from "@/components/Status";
 import { HideItemByTermUseCase } from "@/@core/domain/application/usecases/hide-item-by-term.usecase";
 import { HideItemBySensorTypeUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-type.usecase";
+import { HideItemBySensorStatusUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-status.usecase";
 
 const hideItemUsecase = new HideItemByTermUseCase();
 const hideItemBySensorTypeUseCase = new HideItemBySensorTypeUseCase();
+const hideItemBySensorStatusUseCase = new HideItemBySensorStatusUseCase();
 export interface IItemProps {
 	item: INestAsset | INestLocation;
 	searchTerm: string;
 	energySensorFilter: boolean;
+	criticalStatusFilter: boolean;
 }
 
 const icon = {
@@ -27,9 +30,17 @@ const icon = {
 };
 
 const Item: React.FC<IItemProps> = memo(
-	({ item, searchTerm, energySensorFilter, ...props }) => {
+	({
+		item,
+		searchTerm,
+		energySensorFilter,
+		criticalStatusFilter,
+		...props
+	}) => {
 		const [accordionValue, setAccordionValue] = useState(
-			searchTerm.length > 0 || energySensorFilter ? item.id : undefined,
+			searchTerm.length > 0 || energySensorFilter || criticalStatusFilter
+				? item.id
+				: undefined,
 		);
 
 		const setActiveComponent = useComponentStore(
@@ -44,22 +55,41 @@ const Item: React.FC<IItemProps> = memo(
 			if (energySensorFilter) return hideItemBySensorTypeUseCase.execute(item);
 		}, [item, energySensorFilter]);
 
+		const hideItemBySensorStatus = useMemo(() => {
+			if (criticalStatusFilter)
+				return hideItemBySensorStatusUseCase.execute(item);
+		}, [item, criticalStatusFilter]);
+
 		const { renderArrow, setOpen, open, shouldRenderArrow } = useArrow({
 			searchTerm,
 			item,
 			energySensorFilter,
+			criticalStatusFilter,
 		});
 
 		useEffect(() => {
 			const showByTerm = !hideItem && searchTerm.length > 0;
 			const showBySensor = !hideItemBySensorType && energySensorFilter;
+			const showBySensorStatus =
+				!hideItemBySensorStatus && criticalStatusFilter;
 
 			if (showByTerm) setAccordionValue(item.id);
 			if (showBySensor) setAccordionValue(item.id);
-			if (!showByTerm && !showBySensor) setAccordionValue(undefined);
-		}, [hideItem, searchTerm, item, energySensorFilter, hideItemBySensorType]);
+			if (showBySensorStatus) setAccordionValue(item.id);
+			if (!showByTerm && !showBySensor && !showBySensorStatus)
+				setAccordionValue(undefined);
+		}, [
+			hideItem,
+			searchTerm,
+			item,
+			energySensorFilter,
+			hideItemBySensorType,
+			criticalStatusFilter,
+			hideItemBySensorStatus,
+		]);
 
-		if (hideItem || hideItemBySensorType) return <></>;
+		if (hideItem || hideItemBySensorType || hideItemBySensorStatus)
+			return <></>;
 
 		const shouldRenderStatus = "status" in item && item.status;
 
@@ -117,6 +147,7 @@ const Item: React.FC<IItemProps> = memo(
 								item={child}
 								searchTerm={searchTerm}
 								energySensorFilter={energySensorFilter}
+								criticalStatusFilter={criticalStatusFilter}
 							/>
 						))}
 					</Accordion.AccordionContent>

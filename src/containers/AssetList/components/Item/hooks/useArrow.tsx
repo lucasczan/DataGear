@@ -8,9 +8,10 @@ export function useArrow({
 	searchTerm,
 	item,
 	energySensorFilter,
+	criticalStatusFilter,
 }: IUseArrowProps) {
 	const [open, setOpen] = useState(
-		Boolean(searchTerm.length) || energySensorFilter,
+		Boolean(searchTerm.length) || energySensorFilter || criticalStatusFilter,
 	);
 
 	function renderArrow() {

@@ -7,18 +7,27 @@ import { QueryRoot } from "@/components/QueryRoot";
 import { useComponentStore } from "@/@core/infra/store/component/component.store";
 import { ComponentPreview } from "@/containers/ComponentPreview";
 import { Button } from "@/components/Button";
-import { Zap } from "lucide-react";
+import { Zap, Info } from "lucide-react";
 import { useFiltersStore } from "@/@core/infra/store/filters/filters.store";
 
 export default function Home() {
 	const activeCompany = useCompanyStore((state) => state.activeCompany);
 	const activeComponent = useComponentStore((state) => state.activeComponent);
+
 	const setEnergySensorFilter = useFiltersStore(
 		(store) => store.setEnergySensorFilter,
 	);
 
+	const setcriticalStatusFilter = useFiltersStore(
+		(store) => store.setcriticalStatusFilter,
+	);
+
 	const energySensorFilter = useFiltersStore(
 		(store) => store.energySensorFilter,
+	);
+
+	const criticalStatusFilter = useFiltersStore(
+		(store) => store.criticalStatusFilter,
 	);
 
 	return (
@@ -33,7 +42,7 @@ export default function Home() {
 								/ {activeCompany?.name}
 							</span>
 						</h1>
-						<div>
+						<div className="flex gap-4">
 							<Button
 								variant={energySensorFilter ? "primary" : "outlined"}
 								className="flex gap-2"
@@ -47,13 +56,27 @@ export default function Home() {
 								/>
 								<span className="font-semibold">Sensor de energia</span>
 							</Button>
+							<Button
+								variant={criticalStatusFilter ? "primary" : "outlined"}
+								className="flex gap-2"
+								onClick={() => setcriticalStatusFilter(!criticalStatusFilter)}
+							>
+								<Info
+									size={16}
+									className={
+										criticalStatusFilter ? "text-white" : "text-blue-500"
+									}
+								/>
+								<span className="font-semibold">Crítico</span>
+							</Button>
 						</div>
 					</div>
-					<div className="flex gap-2">
+					<div className="flex gap-2 flex-col md:flex-row">
 						{activeCompany?.id && (
 							<AssetList
 								company={activeCompany}
 								energySensorFilter={energySensorFilter}
+								criticalStatusFilter={criticalStatusFilter}
 							/>
 						)}
 						{activeComponent?.id && (
