@@ -49,17 +49,15 @@ const Item: React.FC<IItemProps> = memo(
 			criticalStatusFilter,
 		});
 
-		const { hideItem, hideItemBySensorStatus, hideItemBySensorType } =
-			useFilters({
-				criticalStatusFilter,
-				energySensorFilter,
-				item,
-				searchTerm,
-				setAccordionValue,
-			});
+		const { shouldHideItem } = useFilters({
+			criticalStatusFilter,
+			energySensorFilter,
+			item,
+			searchTerm,
+			setAccordionValue,
+		});
 
-		if (hideItem || hideItemBySensorType || hideItemBySensorStatus)
-			return <></>;
+		if (shouldHideItem) return <></>;
 
 		const shouldRenderStatus = "status" in item && item.status;
 

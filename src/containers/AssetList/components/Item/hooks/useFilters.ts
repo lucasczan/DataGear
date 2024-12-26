@@ -1,15 +1,29 @@
 import { HideItemBySensorStatusUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-status.usecase";
 import { HideItemBySensorTypeUseCase } from "@/@core/domain/application/usecases/hide-Item-by-sensor-type.usecase";
 import { HideItemByTermUseCase } from "@/@core/domain/application/usecases/hide-item-by-term.usecase";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type {
 	INestAsset,
 	INestLocation,
 } from "@/@core/domain/application/usecases/list-assets-tree.usecase";
+import { useCallback } from "react";
+import { HideItemCombineAllFiltersUseCase } from "@/@core/domain/application/usecases/hide-item-combine-all-filters";
+import { HideItemBySensorAndStatusUseCase } from "@/@core/domain/application/usecases/hide-item-combine-sensor-type-and-status";
+import { HideItemCombineTermAndSensorUseCase } from "@/@core/domain/application/usecases/hide-item-by-term-and-sensor";
+import { HideItemCombineTermAndStatusUseCase } from "@/@core/domain/application/usecases/hide-item-by-term-and-status";
 
-const hideItemUsecase = new HideItemByTermUseCase();
+const hideItemByTermUseCase = new HideItemByTermUseCase();
 const hideItemBySensorTypeUseCase = new HideItemBySensorTypeUseCase();
 const hideItemBySensorStatusUseCase = new HideItemBySensorStatusUseCase();
+const hideCombineAllFiltersUseCase = new HideItemCombineAllFiltersUseCase();
+
+const hideItemBySensorAndStatusUseCase = new HideItemBySensorAndStatusUseCase();
+
+const hideItemByTermAndSensorUseCase =
+	new HideItemCombineTermAndSensorUseCase();
+
+const hideItemByTermAndStatusUseCase =
+	new HideItemCombineTermAndStatusUseCase();
 
 interface IUseFilterProps {
 	searchTerm: string;
@@ -25,39 +39,97 @@ export const useFilters = ({
 	criticalStatusFilter,
 	setAccordionValue,
 }: IUseFilterProps) => {
-	const hideItem = useMemo(() => {
-		if (searchTerm) return hideItemUsecase.execute({ searchTerm, item });
-	}, [searchTerm, item]);
+	const hideBySensorAndStatus = useCallback(() => {
+		return hideItemBySensorAndStatusUseCase.execute(item);
+	}, [item]);
 
-	const hideItemBySensorType = useMemo(() => {
-		if (energySensorFilter) return hideItemBySensorTypeUseCase.execute(item);
-	}, [item, energySensorFilter]);
+	const hideAllFilters = useCallback(() => {
+		return hideCombineAllFiltersUseCase.execute({ item, term: searchTerm });
+	}, [item, searchTerm]);
 
-	const hideItemBySensorStatus = useMemo(() => {
-		if (criticalStatusFilter)
-			return hideItemBySensorStatusUseCase.execute(item);
-	}, [item, criticalStatusFilter]);
+	const hideByCriticalStatus = useCallback(() => {
+		return hideItemBySensorStatusUseCase.execute(item);
+	}, [item]);
 
-	useEffect(() => {
-		const showByTerm = !hideItem && searchTerm.length > 0;
-		const showBySensor = !hideItemBySensorType && energySensorFilter;
-		const showBySensorStatus = !hideItemBySensorStatus && criticalStatusFilter;
+	const hideByEnergySensorType = useCallback(() => {
+		return hideItemBySensorTypeUseCase.execute(item);
+	}, [item]);
 
-		if (showByTerm) setAccordionValue(item.id);
-		if (showBySensor) setAccordionValue(item.id);
-		if (showBySensorStatus) setAccordionValue(item.id);
-		if (!showByTerm && !showBySensor && !showBySensorStatus)
+	const hideByTerm = useCallback(() => {
+		return hideItemByTermUseCase.execute({ item, searchTerm });
+	}, [item, searchTerm]);
+
+	const hideItemByTermAndStatus = useCallback(() => {
+		return hideItemByTermAndStatusUseCase.execute({ item, term: searchTerm });
+	}, [item, searchTerm]);
+
+	const hideItemByTermAndSensor = useCallback(() => {
+		return hideItemByTermAndSensorUseCase.execute({ item, term: searchTerm });
+	}, [item, searchTerm]);
+
+	const handleHideItem = useCallback(() => {
+		if (!energySensorFilter && !criticalStatusFilter && !searchTerm) {
 			setAccordionValue(undefined);
+			return false;
+		}
+
+		let hidden = false;
+
+		if (energySensorFilter && criticalStatusFilter && searchTerm) {
+			hidden = hideAllFilters();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+
+		if (energySensorFilter && criticalStatusFilter) {
+			hidden = hideBySensorAndStatus();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+		if (searchTerm && criticalStatusFilter) {
+			hidden = hideItemByTermAndStatus();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+		if (searchTerm && energySensorFilter) {
+			hidden = hideItemByTermAndSensor();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+
+		if (criticalStatusFilter) {
+			hidden = hideByCriticalStatus();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+
+		if (energySensorFilter) {
+			hidden = hideByEnergySensorType();
+			setAccordionValue(item.id);
+			return hidden;
+		}
+
+		if (searchTerm) {
+			hidden = hideByTerm();
+			setAccordionValue(item.id);
+			return hidden;
+		}
 	}, [
-		hideItem,
+		energySensorFilter,
+		criticalStatusFilter,
 		searchTerm,
 		item,
-		energySensorFilter,
-		hideItemBySensorType,
-		criticalStatusFilter,
-		hideItemBySensorStatus,
+		hideBySensorAndStatus,
+		hideAllFilters,
+		hideByCriticalStatus,
+		hideByEnergySensorType,
 		setAccordionValue,
+		hideByTerm,
+		hideItemByTermAndStatus,
+		hideItemByTermAndSensor,
 	]);
 
-	return { hideItem, hideItemBySensorType, hideItemBySensorStatus };
+	const shouldHideItem = useMemo(() => handleHideItem(), [handleHideItem]);
+
+	return { shouldHideItem };
 };
