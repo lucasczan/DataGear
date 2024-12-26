@@ -1,6 +1,6 @@
 import type { INestAsset } from "@/@core/domain/application/usecases/list-assets-tree.usecase";
 import { Status } from "@/components/Status";
-import { Radar, Radio, RadioReceiver } from "lucide-react";
+import { Radio, RadioReceiver } from "lucide-react";
 import type React from "react";
 
 interface IComponentPreviewProps {
